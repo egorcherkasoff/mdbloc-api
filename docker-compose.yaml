@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: ./docker/fastapi/Dockerfile
+    command: /start
+    container_name: mdbloc-app
+    expose:
+      - 8000
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+  mongo:
+    image: mongo:7.0.5
+    restart: always
+    container_name: mdbloc-db
+    env_file:
+      - .env
+    expose:
+      - 27017
+  redis:
+    image: redis:7.2.4-bookworm
+    container_name: mdbloc-redis
+    restart: always
+    expose:
+      - 6379
+  nginx:
+    build: 
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: mdbloc-webserver
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - app
+  # celery:
+    
