@@ -4,3 +4,4 @@ pydantic==2.6.1
 celery==5.3.6
 motor==3.3.2
 Beanie==1.25.0
+python-dotenv==1.0.1
