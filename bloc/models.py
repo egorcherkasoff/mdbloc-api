@@ -1,14 +1,16 @@
 from beanie import Document, Indexed, Link
 from typing import Optional
 import pymongo
-from pydantic import Field, field_validator, ValidationError, ValidationInfo
+from pydantic import Field, field_validator, ValidationError, ValidationInfo, UUID4
+import uuid
+from fastapi_users.db import BeanieUserDatabase, BeanieBaseUser
 
 
-class User(Document):
+class User(BeanieBaseUser, Document):
     """Модель пользователя"""
 
+    id: UUID4 = uuid.uuid4
     username: str = Field(min_length=6, max_length=64, pattern="^[a-zA-Z0-9_]*$")
-    password: str = Field(min_length=8, pattern="^[a-zA-Z0-9_]*$")
     avatar: str
 
     class Settings:
@@ -20,9 +22,14 @@ class User(Document):
         ]
 
 
+async def get_user_db():
+    yield BeanieUserDatabase(User)
+
+
 class Publication(Document):
     """Модель статьи"""
 
+    id: UUID4 = uuid.uuid4
     title: str = Field(min_length=6, max_length=128)
     body: str = Field(min_length=30)
     # author: User

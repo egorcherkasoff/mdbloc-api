@@ -3,7 +3,7 @@
 Для запуска, заклоньте этот репозиторий
 
 ```
-git clone 
+git clone https://github.com/egorcherkasoff/mdbloc-api
 ```
 
 Затем, создайте в корне проекта .env файл со следующим содержимым:

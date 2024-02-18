@@ -12,3 +12,4 @@ class AppConfig:
     MONGO_USER = environ.get("MONGO_INITDB_ROOT_USERNAME")
     MONGO_PASS = environ.get("MONGO_INITDB_ROOT_PASSWORD")
     MONGO_DB_NAME = environ.get("MONGO_INITDB_DATABASE")
+    JWT_SECRET = environ.get("JWT_SECRET")

@@ -3,7 +3,7 @@ from bloc.db import init
 from bloc.views import publication_router
 
 
-app = FastAPI()
+app = FastAPI(title="MDBloc API")
 
 
 app.add_event_handler("startup", init)
@@ -11,7 +11,7 @@ app.add_event_handler("startup", init)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World1"}
+    return {"message": "Hello World"}
 
 
 app.include_router(publication_router)
