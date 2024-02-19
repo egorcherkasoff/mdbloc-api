@@ -8,7 +8,7 @@ from fastapi_users.authentication import (
 from fastapi import Request, Depends
 from fastapi_users import BaseUserManager, UUIDIDMixin
 from bloc.config import AppConfig
-from bloc.models import User, get_user_db
+from .models import User, get_user_db
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 

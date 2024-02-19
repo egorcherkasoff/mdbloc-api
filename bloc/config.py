@@ -13,3 +13,5 @@ class AppConfig:
     MONGO_PASS = environ.get("MONGO_INITDB_ROOT_PASSWORD")
     MONGO_DB_NAME = environ.get("MONGO_INITDB_DATABASE")
     JWT_SECRET = environ.get("JWT_SECRET")
+    CELERY_BACKEND_URL = environ.get("CELERY_BACKEND_URL")
+    CELERY_BROKER_URL = environ.get("CELERY_BROKER_URL")

@@ -1,10 +1,9 @@
 from beanie import init_beanie
-import motor.motor_asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from bloc.config import AppConfig
 
-
-from bloc.models import Comment, User, Publication
+from bloc.publications.models import Publication, Comment
+from bloc.users.models import User
 
 
 async def init():

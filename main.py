@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from bloc.db import init
-from bloc.views import publication_router
+from bloc.publications.routers import router as publication_router
+from bloc.users.routers import auth_router, register_router, password_reset_router
 
 
 app = FastAPI(title="MDBloc API")
@@ -15,6 +16,10 @@ async def root():
 
 
 app.include_router(publication_router)
+app.include_router(auth_router, prefix="/auth/jwt", tags=["auth"])
+app.include_router(register_router, prefix="/auth", tags=["auth"])
+app.include_router(password_reset_router, prefix="/auth", tags=["auth"])
+
 
 if __name__ == "__main__":
     import uvicorn
