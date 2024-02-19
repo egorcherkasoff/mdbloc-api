@@ -4,14 +4,16 @@ import pymongo
 from pydantic import Field, field_validator, ValidationError, ValidationInfo, UUID4
 import uuid
 
+from bloc.users.models import User
+
 
 class Publication(Document):
     """Модель статьи"""
 
-    id: UUID4 = uuid.uuid4
+    id: UUID4 = Field(default_factory=uuid.uuid4)
     title: str = Field(min_length=6, max_length=128)
     body: str = Field(min_length=30)
-    # author: User
+    author: Link[User]
     views: int = 0
 
     class Settings:

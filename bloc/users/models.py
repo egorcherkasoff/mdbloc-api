@@ -9,7 +9,7 @@ from fastapi_users.db import BeanieUserDatabase, BeanieBaseUser
 class User(BeanieBaseUser, Document):
     """Модель пользователя"""
 
-    id: UUID4 = uuid.uuid4
+    id: UUID4 = Field(default_factory=uuid.uuid4)
     username: str = Field(min_length=6, max_length=64, pattern="^[a-zA-Z0-9_]*$")
     # avatar: str
 
