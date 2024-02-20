@@ -44,3 +44,12 @@ class PublicationRead(BaseModel):
     author: UserRead
     views: int
     comments: Optional[list[CommentRead]] = []
+
+
+class PublicationListRead(BaseModel):
+    """схема для отображения списка статей"""
+
+    page: int
+    next: int
+    prev: int
+    results: list[PublicationRead]

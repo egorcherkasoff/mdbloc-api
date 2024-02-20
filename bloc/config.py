@@ -15,3 +15,4 @@ class AppConfig:
     JWT_SECRET = environ.get("JWT_SECRET")
     CELERY_BACKEND_URL = environ.get("CELERY_BACKEND_URL")
     CELERY_BROKER_URL = environ.get("CELERY_BROKER_URL")
+    PAGE_SIZE = 10

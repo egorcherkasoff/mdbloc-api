@@ -4,37 +4,55 @@ from fastapi.responses import JSONResponse
 from bloc.users.auth import current_user
 from bloc.users.models import User
 from .models import Publication, Comment
-from .schemas import PublicationRead, PublicationCreate, PublicationUpdate
+from .schemas import (
+    PublicationListRead,
+    PublicationRead,
+    PublicationCreate,
+    PublicationUpdate,
+)
 from bloc.schemas import Response
 from pydantic import UUID4
 from fastapi import Depends
+from bloc.config import AppConfig
 
 
 router = APIRouter(prefix="/publications", tags=["publications"])
 
 
-@router.post(
-    path="/", status_code=status.HTTP_201_CREATED, response_model=PublicationRead
-)
-async def create_publication(
-    publication: PublicationCreate,
-    user: User = Depends(current_user),
-):
-    """Эндпоинт для создания статьи"""
-    if user != None:
-        new_publication = Publication(**publication.model_dump(), author=user)
-        await Publication.insert_one(new_publication)
-        return PublicationRead(**new_publication.model_dump())
-
-
 @router.get(
-    path="/", status_code=status.HTTP_200_OK, response_model=list[PublicationRead]
+    path="/",
+    status_code=status.HTTP_200_OK,
+    response_model=PublicationListRead,
+    responses={404: {"model": Response}},
 )
-async def get_publications():
+async def get_publications(page: int = 1):
     """Эндпоинт для получения всех статей"""
-    publications = await Publication.find(fetch_links=True).to_list()
-    print(publications[0])
-    return [PublicationRead(**publication.model_dump()) for publication in publications]
+    # устанавливаем "границы" для поиска по странице
+    pg_size = AppConfig.PAGE_SIZE
+    start_from = pg_size * (page - 1)
+    end_by = start_from + pg_size
+    # достаем кол-во документов в колекции чтобы понять сколько всего будет страниц
+    total_pages = await Publication.count() // pg_size + 1
+    print(total_pages)
+    publications = await Publication.find(
+        fetch_links=True, skip=start_from, limit=end_by
+    ).to_list()
+    if publications != []:
+        # формируем список статей
+        publication_list = [
+            PublicationRead(**publication.model_dump()) for publication in publications
+        ]
+        return PublicationListRead(
+            page=page,
+            next=page + 1 if page < total_pages else page,
+            prev=page - 1 if page <= 1 else None,
+            results=publication_list,
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"detail": "Статей с указанными вами параметрами не существует"},
+    )
 
 
 @router.get(
@@ -53,6 +71,20 @@ async def get_publication(publication_id: UUID4):
         status_code=status.HTTP_404_NOT_FOUND,
         content={"detail": "Такой статьи не существует"},
     )
+
+
+@router.post(
+    path="/", status_code=status.HTTP_201_CREATED, response_model=PublicationRead
+)
+async def create_publication(
+    publication: PublicationCreate,
+    user: User = Depends(current_user),
+):
+    """Эндпоинт для создания статьи"""
+    if user != None:
+        new_publication = Publication(**publication.model_dump(), author=user)
+        await Publication.insert_one(new_publication)
+        return PublicationRead(**new_publication.model_dump())
 
 
 @router.patch(
@@ -89,7 +121,10 @@ async def update_publication(
 
 @router.delete(
     path="/{publication_id}",
-    responses={204: {"description": "Publication deleted"}},
+    responses={
+        204: {"description": "Publication deleted"},
+        404: {"model": Response},
+    },
 )
 async def delete_publication(
     publication_id: UUID4,
